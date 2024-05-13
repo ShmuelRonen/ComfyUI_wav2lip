@@ -106,6 +106,7 @@ If you continue to face issues after making this change, please ensure that you 
 
 ## Acknowledgement
 Thanks to
+[ArtemM](https://github.com/mav-rik),
 [Wav2Lip](https://github.com/Rudrabha/Wav2Lip),
 [PIRenderer](https://github.com/RenYurui/PIRender), 
 [GFP-GAN](https://github.com/TencentARC/GFPGAN), 
