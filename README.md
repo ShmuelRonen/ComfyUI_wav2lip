@@ -40,11 +40,23 @@ The Wav2Lip node is a custom node for ComfyUI that allows you to perform lip-syn
    pip install -r requirements.txt
    ```
 
-3. Place the Wav2Lip node files in the appropriate directory of your ComfyUI installation.
+## Model Setup
 
-4. Download the required face restoration models and place them in the `facerestore_models` directory.
+To use the Wav2Lip node, you need to download the required face enhancement models separately. Please follow these steps:
 
-5. Start or restart ComfyUI.
+1. Download the CodeFormer model:
+   - Visit the [CodeFormer model page](link_to_codeformer_model_page)
+   - Download the `CodeFormer.pth` model file
+   - Place the `CodeFormer.pth` file in the `facerestore_models` directory
+
+2. Download the GFPGAN model:
+   - Visit the [GFPGAN model page](link_to_gfpgan_model_page)
+   - Download the `GFPGAN.pth` model file
+   - Place the `GFPGAN.pth` file in the `facerestore_models` directory
+
+Please ensure that you have the necessary models downloaded and placed in the correct directories before using the Wav2Lip node.
+
+3. Start or restart ComfyUI.
 
 ## Usage
 
