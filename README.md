@@ -48,10 +48,6 @@ The Wav2Lip node is a custom node for ComfyUI that allows you to perform lip-syn
 
 To use the Wav2Lip node, you need to download the required face enhancement models separately. Please follow these steps:
 
-## Model Setup
-
-To use the Wav2Lip node, you need to download the required face enhancement models separately. Please follow these steps:
-
 1. Download the CodeFormer & GFPGAN models:
    - Download the [CodeFormer model](https://huggingface.co/datasets/lengyuchuixue/codeformer.pth/resolve/main/codeformer.pth?download=true)
    - Download the [GFPGAN model](https://huggingface.co/nlightcho/gfpgan-v1.3/resolve/main/GFPGANv1.3.pth?download=true)
