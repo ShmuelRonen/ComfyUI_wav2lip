@@ -104,3 +104,23 @@ Note: If you have multiple Python environments or versions installed, make sure 
 
 If you continue to face issues after making this change, please ensure that you have a compatible version of torchvision installed in your environment and that there are no other conflicting dependencies.
 
+## Acknowledgement
+Thanks to
+[Wav2Lip](https://github.com/Rudrabha/Wav2Lip),
+[PIRenderer](https://github.com/RenYurui/PIRender), 
+[GFP-GAN](https://github.com/TencentARC/GFPGAN), 
+[GPEN](https://github.com/yangxy/GPEN),
+[ganimation_replicate](https://github.com/donydchen/ganimation_replicate),
+[STIT](https://github.com/rotemtzaban/STIT)
+for sharing their code.
+
+
+## Related Work
+- [StyleHEAT: One-Shot High-Resolution Editable Talking Face Generation via Pre-trained StyleGAN (ECCV 2022)](https://github.com/FeiiYin/StyleHEAT)
+- [CodeTalker: Speech-Driven 3D Facial Animation with Discrete Motion Prior (CVPR 2023)](https://github.com/Doubiiu/CodeTalker)
+- [SadTalker: Learning Realistic 3D Motion Coefficients for Stylized Audio-Driven Single Image Talking Face Animation (CVPR 2023)](https://github.com/Winfredy/SadTalker)
+- [DPE: Disentanglement of Pose and Expression for General Video Portrait Editing (CVPR 2023)](https://github.com/Carlyx/DPE)
+- [3D GAN Inversion with Facial Symmetry Prior (CVPR 2023)](https://github.com/FeiiYin/SPI/)
+- [T2M-GPT: Generating Human Motion from Textual Descriptions with Discrete Representations (CVPR 2023)](https://github.com/Mael-zys/T2M-GPT)
+
+
