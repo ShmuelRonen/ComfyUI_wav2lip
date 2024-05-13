@@ -34,7 +34,7 @@ wav2lip_path = os.path.join(current_dir, "wav2lip")
 sys.path.append(wav2lip_path)
 from wav2lip_node import wav2lip_
 
-from custom_nodes.facerestore_cf.basicsr.utils.registry import ARCH_REGISTRY
+from custom_nodes.ComfyUI_wav2lip.basicsr.utils.registry import ARCH_REGISTRY
 
 def process_audio(audio_data):
     audio_format = "mp3"  # Default format
