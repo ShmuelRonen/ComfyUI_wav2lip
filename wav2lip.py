@@ -11,8 +11,8 @@ import soundfile as sf
 import cv2
 from torchvision.transforms.functional import normalize
 import math
-from custom_nodes.facerestore_cf.facelib.utils.face_restoration_helper import FaceRestoreHelper
-from custom_nodes.facerestore_cf.facelib.detection.retinaface import retinaface
+from custom_nodes.ComfyUI_wav2lip.facelib.utils.face_restoration_helper import FaceRestoreHelper
+from custom_nodes.ComfyUI_wav2lip.facelib.detection.retinaface import retinaface
 from torchvision.transforms.functional import normalize
 from comfy_extras.chainner_models import model_loading
 import folder_paths
