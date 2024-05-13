@@ -61,9 +61,6 @@ To use the Wav2Lip node, you need to download the required models separately. Pl
 
 1. Download the wav2lip model: [-1-](https://iiitaphyd-my.sharepoint.com/:u:/g/personal/radrabha_m_research_iiit_ac_in/EdjI7bZlgApMqsVoEUUXpLsBxqXbn5z8VTmoxp55YNDcIA?e=n9ljGW) 
 2. Place the `.pth model file in the `custom_nodes\ComfyUI_wav2lip\Wav2Lip\checkpoints` folder
-
-Please ensure that you have the necessary models downloaded and placed in the correct directories before using the Wav2Lip node.
-
 3. Start or restart ComfyUI.
 
 ## Usage
