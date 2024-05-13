@@ -30,7 +30,7 @@ The Wav2Lip node is a custom node for ComfyUI that allows you to perform lip-syn
 
 ## Installation
 
-1. Clone the repository:
+1. Clone the repository to custom_nodes folder:
    ```
    git clone https://github.com/yourusername/wav2lip-comfyui.git
    ```
