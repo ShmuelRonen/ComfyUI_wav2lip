@@ -95,8 +95,4 @@ By replacing the "degradations.py" file with the updated version, you should be 
 Note: If you have multiple Python environments or versions installed, make sure to replace the "degradations.py" file in the correct venv directory that is being used by your application.
 
 If you continue to face issues after making this change, please ensure that you have a compatible version of torchvision installed in your environment and that there are no other conflicting dependencies.
-```
 
-This README.md file provides an overview of the Wav2Lip node, its features, inputs, outputs, and installation instructions. It also includes a section on the available face enhancement models and a highlighted update section for resolving the compatibility issue with basicsr.
-
-You can copy and paste this content into your README.md file on GitHub. The markdown formatting will ensure that the headers, code blocks, and highlighted sections are properly displayed.
