@@ -82,22 +82,13 @@ Please ensure that you have the necessary models downloaded and placed in the co
 
 4. Execute the ComfyUI workflow to generate the lip-synced output video.
 
-## Face Enhancement Models
-
-The Wav2Lip node supports the following face enhancement models:
-
-- CodeFormer: `CodeFormer.pth`
-- GFPGAN: `GFPGAN.pth`
-
-Make sure to place the model files in the `facerestore_models` directory.
-
-## <span style="color: red;">Important Update for basicsr Compatibility</span>
+## <span style="color: red;">IMPORTANT: Update for basicsr Compatibility</span>
 
 If you encounter a "ModuleNotFoundError" related to "torchvision.transforms.functional_tensor" when trying to use the wav2lip node, you'll need to manually update a file in your Python virtual environment (venv) to ensure compatibility with the latest version of torchvision.
 
 To fix this issue, follow these steps:
 
-1. Download the updated "degradations.py" file provided by the maintainer of the wav2lip node. This file includes the necessary changes to work with the latest torchvision version.
+1. Download the updated "degradations.py" file provided by the maintainer of the wav2lip node. This file includes in the'service' folder.
 
 2. Locate the existing "degradations.py" file in your venv directory. The path should be similar to:
    ```
