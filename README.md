@@ -51,7 +51,16 @@ To use the Wav2Lip node, you need to download the required models separately. Pl
 ### facerestore_models:
 
 1. Download the CodeFormer & GFPGAN models: [CodeFormer model](https://huggingface.co/datasets/lengyuchuixue/codeformer.pth/resolve/main/codeformer.pth?download=true) | [GFPGAN model](https://huggingface.co/nlightcho/gfpgan-v1.3/resolve/main/GFPGANv1.3.pth?download=true)
-2. Place the `.pth model files in the `custom_nodes\ComfyUI_wav2lip\models\facerestore_models` directory
+2. Place the `.pth model files in the `custom_nodes\ComfyUI_wav2lip\models\facerestore_models` folder
+### facedetection_models:
+
+1. Download the facedetection models: [-1-](https://github.com/xinntao/facexlib/releases/download/v0.1.0/detection_Resnet50_Final.pth) |[-2-](https://github.com/xinntao/facexlib/releases/download/v0.1.0/detection_mobilenet0.25_Final.pth) |[-3-](https://github.com/sczhou/CodeFormer/releases/download/v0.1.0/yolov5l-face.pth) |[-4-](https://github.com/sczhou/CodeFormer/releases/download/v0.1.0/yolov5n-face.pth)
+2. Place the `.pth model files in the `custom_nodes\ComfyUI_wav2lip\models\facedetection` folder
+
+### wav2lip model:
+
+1. Download the wav2lip model: [-1-](https://iiitaphyd-my.sharepoint.com/:u:/g/personal/radrabha_m_research_iiit_ac_in/EdjI7bZlgApMqsVoEUUXpLsBxqXbn5z8VTmoxp55YNDcIA?e=n9ljGW) 
+2. Place the `.pth model file in the `custom_nodes\ComfyUI_wav2lip\Wav2Lip\checkpoints` folder
 
 Please ensure that you have the necessary models downloaded and placed in the correct directories before using the Wav2Lip node.
 
