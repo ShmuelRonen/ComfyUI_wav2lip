@@ -96,7 +96,7 @@ To fix this issue, follow these steps:
 
 4. Replace the existing "degradations.py" file with the updated file you downloaded in step 1.
 
-5. Restart your application or script that uses the wav2lip node.
+5. Start or restart ComfyUI.
 
 By replacing the "degradations.py" file with the updated version, you should be able to use the wav2lip node without encountering the "ModuleNotFoundError" related to torchvision.
 
