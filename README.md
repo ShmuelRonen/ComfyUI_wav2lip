@@ -49,14 +49,12 @@ The Wav2Lip node is a custom node for ComfyUI that allows you to perform lip-syn
 To use the Wav2Lip node, you need to download the required face enhancement models separately. Please follow these steps:
 
 1. Download the CodeFormer model:
-   - Visit the [CodeFormer model page](link_to_codeformer_model_page)
-   - Download the `CodeFormer.pth` model file
-   - Place the `CodeFormer.pth` file in the `facerestore_models` directory
+   - Link for [CodeFormer model]([link_to_codeformer_model_page](https://huggingface.co/datasets/lengyuchuixue/codeformer.pth/resolve/main/codeformer.pth?download=true))
+   - Place the `CodeFormer.pth` file in the `custom_nodes\ComfyUI_wav2lip\models\facerestore_models` directory
 
 2. Download the GFPGAN model:
-   - Visit the [GFPGAN model page](link_to_gfpgan_model_page)
-   - Download the `GFPGAN.pth` model file
-   - Place the `GFPGAN.pth` file in the `facerestore_models` directory
+   - Link for [GFPGAN model]([link_to_gfpgan_model_page](https://huggingface.co/nlightcho/gfpgan-v1.3/resolve/main/GFPGANv1.3.pth?download=true))
+   - Place the `GFPGAN.pth` file in the `fcustom_nodes\ComfyUI_wav2lip\models\facerestore_models` directory
 
 Please ensure that you have the necessary models downloaded and placed in the correct directories before using the Wav2Lip node.
 
