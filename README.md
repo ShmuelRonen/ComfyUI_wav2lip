@@ -88,7 +88,7 @@ If you encounter a "ModuleNotFoundError" related to "torchvision.transforms.func
 
 To fix this issue, follow these steps:
 
-1. Download the updated "degradations.py" file provided by the maintainer of the wav2lip node. This file includes in the'service' folder.
+1. Download the updated "degradations.py" file provided by the maintainer of the wav2lip node. You can find this file in the 'service' folder.
 
 2. Locate the existing "degradations.py" file in your venv directory. The path should be similar to:
    ```
