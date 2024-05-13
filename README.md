@@ -84,7 +84,7 @@ Please ensure that you have the necessary models downloaded and placed in the co
 
 ## <span style="color: red;">IMPORTANT: Update for basicsr Compatibility</span>
 
-If you encounter a "ModuleNotFoundError" related to "torchvision.transforms.functional_tensor" when trying to use the wav2lip node, you'll need to manually update a file in your Python virtual environment (venv) to ensure compatibility with the latest version of torchvision.
+If you encounter an error like "No module named 'torchvision.transforms.functional_tensor" when trying to use the wav2lip node, you'll need to manually update a file in your Python virtual environment (venv) to ensure compatibility with the latest version of torchvision.
 
 To fix this issue, follow these steps:
 
