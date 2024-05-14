@@ -1,30 +1,21 @@
 # registry.py
 # Modified from: https://github.com/facebookresearch/fvcore/blob/master/fvcore/common/registry.py  # noqa: E501
+import logging
+
+# Setting up a logger
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.WARNING) 
+handler = logging.FileHandler('registry_warnings.log')
+handler.setLevel(logging.WARNING)
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
+
 
 class Registry:
     """
     The registry that provides name -> object mapping, to support third-party
     users' custom modules.
-
-    To create a registry (e.g. a backbone registry):
-
-    .. code-block:: python
-
-        BACKBONE_REGISTRY = Registry('BACKBONE')
-
-    To register an object:
-
-    .. code-block:: python
-
-        @BACKBONE_REGISTRY.register()
-        class MyBackbone():
-            ...
-
-    Or:
-
-    .. code-block:: python
-
-        BACKBONE_REGISTRY.register(MyBackbone)
     """
 
     def __init__(self, name):
@@ -37,7 +28,10 @@ class Registry:
 
     def _do_register(self, name, obj):
         if name in self._obj_map:
-            print(f"Warning: An object named '{name}' is already registered in '{self._name}' registry!")
+            warning_message = (f"Warning: An object named '{name}' is already registered in "
+                               f"'{self._name}' registry! Skipping duplicate registration.")
+            print(warning_message)
+            logger.warning(warning_message)
             return
         self._obj_map[name] = obj
 
@@ -66,19 +60,5 @@ class Registry:
             raise KeyError(f"No object named '{name}' found in '{self._name}' registry!")
         return ret
 
-    def __contains__(self, name):
-        return name in self._obj_map
-
-    def __iter__(self):
-        return iter(self._obj_map.items())
-
-    def keys(self):
-        return self._obj_map.keys()
-
-
-DATASET_REGISTRY = Registry('dataset')
-ARCH_REGISTRY = Registry('arch')
-MODEL_REGISTRY = Registry('model')
-LOSS_REGISTRY = Registry('loss')
-METRIC_REGISTRY = Registry('metric')
+    def __contains__(
 
