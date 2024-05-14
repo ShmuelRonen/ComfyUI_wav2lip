@@ -1,6 +1,3 @@
-#  Modified from: https://github.com/facebookresearch/fvcore/blob/master/fvcore/common/registry.py  # noqa: E501
-
-
 class Registry():
     """
     The registry that provides name -> object mapping, to support third-party
@@ -27,17 +24,23 @@ class Registry():
         BACKBONE_REGISTRY.register(MyBackbone)
     """
 
-    def __init__(self, name):
+    def __init__(self, name, overwrite=False):
         """
         Args:
             name (str): the name of this registry
+            overwrite (bool): whether to overwrite an existing object with the same name
         """
         self._name = name
         self._obj_map = {}
+        self._overwrite = overwrite
 
     def _do_register(self, name, obj):
-        assert (name not in self._obj_map), (f"An object named '{name}' was already registered "
-                                             f"in '{self._name}' registry!")
+        if name in self._obj_map:
+            if self._overwrite:
+                print(f"Overwriting object named '{name}' in '{self._name}' registry.")
+            else:
+                raise KeyError(f"An object named '{name}' was already registered "
+                               f"in '{self._name}' registry!")
         self._obj_map[name] = obj
 
     def register(self, obj=None):
@@ -78,5 +81,5 @@ class Registry():
 DATASET_REGISTRY = Registry('dataset')
 ARCH_REGISTRY = Registry('arch')
 MODEL_REGISTRY = Registry('model')
-LOSS_REGISTRY = Registry('loss')
+LOSS_REGISTRY = Registry('loss', overwrite=True)
 METRIC_REGISTRY = Registry('metric')
