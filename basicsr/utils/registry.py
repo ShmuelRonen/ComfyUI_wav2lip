@@ -1,7 +1,7 @@
+# registry.py
 # Modified from: https://github.com/facebookresearch/fvcore/blob/master/fvcore/common/registry.py  # noqa: E501
 
-
-class Registry():
+class Registry:
     """
     The registry that provides name -> object mapping, to support third-party
     users' custom modules.
@@ -36,13 +36,14 @@ class Registry():
         self._obj_map = {}
 
     def _do_register(self, name, obj):
-        assert (name not in self._obj_map), (f"An object named '{name}' was already registered "
-                                             f"in '{self._name}' registry!")
+        if name in self._obj_map:
+            print(f"Warning: An object named '{name}' is already registered in '{self._name}' registry!")
+            return
         self._obj_map[name] = obj
 
     def register(self, obj=None):
         """
-        Register the given object under the the name `obj.__name__`.
+        Register the given object under the name `obj.__name__`.
         Can be used as either a decorator or not.
         See docstring of this class for usage.
         """
@@ -80,3 +81,4 @@ ARCH_REGISTRY = Registry('arch')
 MODEL_REGISTRY = Registry('model')
 LOSS_REGISTRY = Registry('loss')
 METRIC_REGISTRY = Registry('metric')
+
