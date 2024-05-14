@@ -5,7 +5,6 @@ opencv-python
 Pillow
 tqdm
 tensorflow
-tensorflow-gpu
 PyYAML
 scikit-image
 tb-nightly
