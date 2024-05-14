@@ -1,3 +1,4 @@
+
 import os
 import sys
 import numpy as np
@@ -13,10 +14,16 @@ from torchvision.transforms.functional import normalize
 import math
 from .facelib.utils.face_restoration_helper import FaceRestoreHelper
 from .facelib.detection.retinaface import retinaface
-from torchvision.transforms.functional import normalize
 from comfy_extras.chainner_models import model_loading
 import folder_paths
-import sys
+
+if 'wav2lip' not in sys.path:
+    wav2lip_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "wav2lip")
+    sys.path.append(wav2lip_path)
+
+from wav2lip_node import wav2lip_
+
+from .basicsr.utils.registry import ARCH_REGISTRY
 
 def setup_directory(base_dir, dir_name, folder_paths):
     dir_path = os.path.join(base_dir, dir_name)
@@ -26,16 +33,6 @@ def setup_directory(base_dir, dir_name, folder_paths):
 setup_directory(folder_paths.models_dir, "facerestore_models", folder_paths)
 setup_directory(folder_paths.models_dir, "facedetection", folder_paths)
 
-current_dir = os.path.dirname(os.path.abspath(__file__))
-parent_dir = os.path.dirname(current_dir)
-sys.path.append(parent_dir)
-
-wav2lip_path = os.path.join(current_dir, "wav2lip")
-sys.path.append(wav2lip_path)
-from wav2lip_node import wav2lip_
-
-from .basicsr.utils.registry import ARCH_REGISTRY
-
 def process_audio(audio_data):
     audio_format = "mp3"  # Default format
     if audio_data[:4] == b"RIFF":
@@ -44,7 +41,7 @@ def process_audio(audio_data):
     audio_segment = AudioSegment.from_file(io.BytesIO(audio_data), format=audio_format)
     audio_segment = audio_segment.set_channels(1).set_frame_rate(16000)
     audio_array = np.array(audio_segment.get_array_of_samples(), dtype=np.float32)
-    audio_array /= 2**15  # Normalize the audio data
+    audio_array /= 2 ** 15  # Normalize the audio data
 
     return audio_array
 
@@ -204,6 +201,8 @@ class Wav2Lip:
 
         # Apply face enhancement using facerestore_cf if enabled
         if face_restore == "enable":
+            if not facerestore_model:
+                raise ValueError("Face restore model must be provided when face restoration is enabled.")
             facerestore_model = self.load_facerestore_model(facerestore_model)
             out_img_list = perform_face_enhancement(out_img_list, facerestore_model, facedetection, codeformer_fidelity)
 
