@@ -11,8 +11,8 @@ import soundfile as sf
 import cv2
 from torchvision.transforms.functional import normalize
 import math
-from custom_nodes.ComfyUI_wav2lip.facelib.utils.face_restoration_helper import FaceRestoreHelper
-from custom_nodes.ComfyUI_wav2lip.facelib.detection.retinaface import retinaface
+from .facelib.utils.face_restoration_helper import FaceRestoreHelper
+from .facelib.detection.retinaface import retinaface
 from torchvision.transforms.functional import normalize
 from comfy_extras.chainner_models import model_loading
 import folder_paths
@@ -34,7 +34,7 @@ wav2lip_path = os.path.join(current_dir, "wav2lip")
 sys.path.append(wav2lip_path)
 from wav2lip_node import wav2lip_
 
-from custom_nodes.ComfyUI_wav2lip.basicsr.utils.registry import ARCH_REGISTRY
+from .basicsr.utils.registry import ARCH_REGISTRY
 
 def process_audio(audio_data):
     audio_format = "mp3"  # Default format
