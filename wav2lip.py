@@ -1,4 +1,3 @@
-
 import os
 import sys
 import numpy as np
@@ -12,38 +11,47 @@ import soundfile as sf
 import cv2
 from torchvision.transforms.functional import normalize
 import math
-from .facelib.utils.face_restoration_helper import FaceRestoreHelper
-from .facelib.detection.retinaface import retinaface
+from custom_nodes.facerestore_cf.facelib.utils.face_restoration_helper import FaceRestoreHelper
+from custom_nodes.facerestore_cf.facelib.detection.retinaface import retinaface
 from comfy_extras.chainner_models import model_loading
 import folder_paths
+import torchaudio.transforms as transforms
 
-if 'wav2lip' not in sys.path:
-    wav2lip_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "wav2lip")
-    sys.path.append(wav2lip_path)
+dir_facerestore_models = os.path.join(folder_paths.models_dir, "facerestore_models")
+dir_facedetection_models = os.path.join(folder_paths.models_dir, "facedetection")
+os.makedirs(dir_facerestore_models, exist_ok=True)
+os.makedirs(dir_facedetection_models, exist_ok=True)
+folder_paths.folder_names_and_paths["facerestore_models"] = ([dir_facerestore_models], folder_paths.supported_pt_extensions)
+folder_paths.folder_names_and_paths["facedetection_models"] = ([dir_facedetection_models], folder_paths.supported_pt_extensions)
 
-from wav2lip_node import wav2lip_
+current_dir = os.path.dirname(os.path.abspath(__file__))
+parent_dir = os.path.dirname(current_dir)
+sys.path.append(parent_dir)
 
-from .basicsr.utils.registry import ARCH_REGISTRY
+wav2lip_path = os.path.join(current_dir, "wav2lip")
+sys.path.append(wav2lip_path)
+from wav2lip import Wav2Lip 
 
-def setup_directory(base_dir, dir_name, folder_paths):
-    dir_path = os.path.join(base_dir, dir_name)
-    os.makedirs(dir_path, exist_ok=True)
-    folder_paths.folder_names_and_paths[dir_name] = ([dir_path], folder_paths.supported_pt_extensions)
-
-setup_directory(folder_paths.models_dir, "facerestore_models", folder_paths)
-setup_directory(folder_paths.models_dir, "facedetection", folder_paths)
+from custom_nodes.facerestore_cf.basicsr.utils.registry import ARCH_REGISTRY
 
 def process_audio(audio_data):
-    audio_format = "mp3"  # Default format
+    audio_format = "mp3" 
     if audio_data[:4] == b"RIFF":
         audio_format = "wav"
 
     audio_segment = AudioSegment.from_file(io.BytesIO(audio_data), format=audio_format)
     audio_segment = audio_segment.set_channels(1).set_frame_rate(16000)
     audio_array = np.array(audio_segment.get_array_of_samples(), dtype=np.float32)
-    audio_array /= 2 ** 15  # Normalize the audio data
+    audio_array /= 2**15 
 
     return audio_array
+
+def audio_to_mel_spectrogram(audio_data):
+    waveform = torch.from_numpy(audio_data).unsqueeze(0)
+    transform = transforms.MelSpectrogram(sample_rate=16000, n_mels=80)
+    mel_spectrogram = transform(waveform)
+    mel_spectrogram = mel_spectrogram.squeeze(0).numpy()
+    return mel_spectrogram
 
 def img2tensor(imgs, bgr2rgb=True, float32=True):
     def _totensor(img, bgr2rgb, float32):
@@ -81,7 +89,7 @@ def tensor2img(tensor, rgb2bgr=True, out_type=np.uint8, min_max=(0, 1)):
         elif n_dim == 3:
             img_np = _tensor.numpy()
             img_np = img_np.transpose(1, 2, 0)
-            if img_np.shape[2] == 1:  # gray image
+            if img_np.shape[2] == 1: 
                 img_np = np.squeeze(img_np, axis=2)
             else:
                 if rgb2bgr:
@@ -91,7 +99,6 @@ def tensor2img(tensor, rgb2bgr=True, out_type=np.uint8, min_max=(0, 1)):
         else:
             raise TypeError('Only support 4D, 3D or 2D tensor. ' f'But received with dimension: {n_dim}')
         if out_type == np.uint8:
-            # Unlike MATLAB, numpy.unit8() WILL NOT round by default.
             img_np = (img_np * 255.0).round()
         img_np = img_np.astype(out_type)
         result.append(img_np)
@@ -136,7 +143,7 @@ def perform_face_enhancement(input_imgs, facerestore_model, facedetection, codef
 
     return enhanced_imgs
 
-class Wav2Lip:
+class Wav2LipNode:
     @classmethod
     def INPUT_TYPES(s):
         return {
@@ -195,11 +202,16 @@ class Wav2Lip:
             temp_audio_path = temp_audio.name
             sf.write(temp_audio_path, audio_data, samplerate=16000)
 
-        out_img_list = wav2lip_(in_img_list, temp_audio_path, face_detect_batch, mode)
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        checkpoint_path = os.path.join(script_dir, 'wav2lip', 'checkpoints', 'wav2lip_gan.pth')
+
+        if not os.path.isfile(checkpoint_path):
+            raise FileNotFoundError(f"Checkpoint file not found at {checkpoint_path}")
+
+        out_img_list = wav2lip_(in_img_list, temp_audio_path, face_detect_batch, mode, checkpoint_path)
 
         os.unlink(temp_audio_path)
 
-        # Apply face enhancement using facerestore_cf if enabled
         if face_restore == "enable":
             if not facerestore_model:
                 raise ValueError("Face restore model must be provided when face restoration is enabled.")
@@ -217,9 +229,36 @@ class Wav2Lip:
         return (images, audio,)
 
 NODE_CLASS_MAPPINGS = {
-    "Wav2Lip": Wav2Lip,
+    "Wav2Lip": Wav2LipNode,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
     "Wav2Lip": "Wav2Lip",
 }
+
+def wav2lip_(in_img_list, temp_audio_path, face_detect_batch, mode, checkpoint_path):
+   
+    model = load_wav2lip_model(checkpoint_path)
+
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    model = model.to(device)
+
+    results = []
+    for img in in_img_list:
+        img_tensor = img2tensor(img).unsqueeze(0).to(device) 
+        audio_data, _ = sf.read(temp_audio_path) 
+        mel_spectrogram = audio_to_mel_spectrogram(audio_data)
+        audio_tensor = torch.from_numpy(mel_spectrogram).unsqueeze(0).unsqueeze(0).to(device) 
+        with torch.no_grad():
+            output = model(img_tensor, audio_tensor) 
+        output_img = tensor2img(output)
+        results.append(output_img)
+
+    return results  
+
+def load_wav2lip_model(checkpoint_path):
+    model = Wav2Lip()  
+    checkpoint = torch.load(checkpoint_path, map_location=torch.device('cuda' if torch.cuda.is_available() else 'cpu'))
+    model.load_state_dict(checkpoint) 
+    model.eval()
+    return model
