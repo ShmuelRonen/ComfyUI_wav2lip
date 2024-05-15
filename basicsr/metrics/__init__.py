@@ -1,16 +1,13 @@
-from copy import deepcopy
+from .psnr_ssim import Wav2Lip_calculate_psnr, Wav2Lip_calculate_ssim
 
-from custom_nodes.facerestore_cf.basicsr.utils.registry import METRIC_REGISTRY
-from .psnr_ssim import calculate_psnr, calculate_ssim
-
-__all__ = ['calculate_psnr', 'calculate_ssim']
+__all__ = ['Wav2Lip_calculate_psnr', 'Wav2Lip_calculate_ssim']
 
 
 def calculate_metric(data, opt):
     """Calculate metric from data and options.
 
     Args:
-        opt (dict): Configuration. It must constain:
+        opt (dict): Configuration. It must contain:
             type (str): Model type.
     """
     opt = deepcopy(opt)
