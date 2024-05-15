@@ -7,7 +7,28 @@ The Wav2Lip node is a custom node for ComfyUI that allows you to perform lip-syn
 
 ![wav2lip](https://github.com/ShmuelRonen/ComfyUI_wav2lip/assets/80190186/bc23b61e-d09e-473a-82a9-516d0a6e14a3)
 
+### Fix for Import Errors and Naming Conflicts
 
+#### Issue
+Some users experienced import errors and naming conflicts related to the L1Loss class, resulting in errors such as:
+  ```
+ImportError: cannot import name 'L1Loss' from 'ComfyUI_wav2lip.basicsr.losses.losses'
+  ```
+#### Solution
+To resolve this issue, the L1Loss class was renamed to Wav2LipL1Loss to avoid conflicts with existing registrations. All necessary import statements and references have been updated accordingly.
+
+#### Instructions
+To apply the fix, please follow these steps:
+Pull the latest changes from the repository:
+Open a terminal, navigate to your local repository, and run:
+
+  ```
+git pull
+  ```
+Restart ComfyUI:
+After pulling the latest changes, restart ComfyUI to apply the updates.
+
+By following these steps, you should be able to resolve the import errors and use the module without 
 
 ## Features
 
