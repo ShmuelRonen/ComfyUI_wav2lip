@@ -17,6 +17,26 @@ from .facelib.detection.retinaface import retinaface
 from comfy_extras.chainner_models import model_loading
 import folder_paths
 
+def find_folder(base_path, folder_name):
+    for root, dirs, files in os.walk(base_path):
+        if folder_name in dirs:
+            return Path(root) / folder_name
+    return None
+
+def check_model_in_folder(folder_path, model_file):
+    model_path = folder_path / model_file
+    return model_path.exists()
+
+base_dir = Path(__file__).resolve().parent
+
+checkpoints_path = find_folder(base_dir, "checkpoints")
+facerestore_models = find_folder(base_dir, "facerestore_models")
+facedetection = find_folder(base_dir, "facedetection")
+
+wav2lip_model_file = "wav2lip_gan.pth"
+model_exists = check_model_in_folder(checkpoints_path, wav2lip_model_file)
+assert model_exists, f"Model {wav2lip_model_file} not found in {checkpoints_path}"
+
 current_dir = Path(__file__).resolve().parent
 wav2lip_path = current_dir / "wav2lip"
 if str(wav2lip_path) not in sys.path:
@@ -100,6 +120,7 @@ def perform_face_enhancement(input_imgs, facerestore_model, facedetection, codef
     enhanced_imgs = []
     total_imgs = len(input_imgs)
     for i, img in enumerate(input_imgs, start=1):
+        print(f"Processing frame {i}/{total_imgs}") 
         face_helper.clean_all()
         face_helper.read_image(img)
         face_helper.get_face_landmarks_5(only_center_face=False, resize=640, eye_dist_threshold=5)
