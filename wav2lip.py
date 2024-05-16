@@ -16,6 +16,10 @@ from custom_nodes.facerestore_cf.facelib.detection.retinaface import retinaface
 from comfy_extras.chainner_models import model_loading
 import folder_paths
 import torchaudio.transforms as transforms
+from pathlib import Path
+
+current_dir = Path(__file__).resolve().parent
+sys.path.append(str(current_dir))
 
 dir_facerestore_models = os.path.join(folder_paths.models_dir, "facerestore_models")
 dir_facedetection_models = os.path.join(folder_paths.models_dir, "facedetection")
@@ -24,13 +28,11 @@ os.makedirs(dir_facedetection_models, exist_ok=True)
 folder_paths.folder_names_and_paths["facerestore_models"] = ([dir_facerestore_models], folder_paths.supported_pt_extensions)
 folder_paths.folder_names_and_paths["facedetection_models"] = ([dir_facedetection_models], folder_paths.supported_pt_extensions)
 
-current_dir = os.path.dirname(os.path.abspath(__file__))
-parent_dir = os.path.dirname(current_dir)
-sys.path.append(parent_dir)
-
 wav2lip_path = os.path.join(current_dir, "wav2lip")
-sys.path.append(wav2lip_path)
-from wav2lip import Wav2Lip 
+checkpoint_path = os.path.join(wav2lip_path, 'checkpoints', 'wav2lip_gan.pth')
+sys.path.append(str(wav2lip_path))
+
+from wav2lip import Wav2Lip  
 
 from custom_nodes.facerestore_cf.basicsr.utils.registry import ARCH_REGISTRY
 
@@ -237,7 +239,6 @@ NODE_DISPLAY_NAME_MAPPINGS = {
 }
 
 def wav2lip_(in_img_list, temp_audio_path, face_detect_batch, mode, checkpoint_path):
-   
     model = load_wav2lip_model(checkpoint_path)
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -248,16 +249,16 @@ def wav2lip_(in_img_list, temp_audio_path, face_detect_batch, mode, checkpoint_p
         img_tensor = img2tensor(img).unsqueeze(0).to(device) 
         audio_data, _ = sf.read(temp_audio_path) 
         mel_spectrogram = audio_to_mel_spectrogram(audio_data)
-        audio_tensor = torch.from_numpy(mel_spectrogram).unsqueeze(0).unsqueeze(0).to(device) 
+        audio_tensor = torch.from_numpy(mel_spectrogram).unsqueeze(0).unsqueeze(0).to(device)  
         with torch.no_grad():
-            output = model(img_tensor, audio_tensor) 
+            output = model(img_tensor, audio_tensor)  
         output_img = tensor2img(output)
         results.append(output_img)
 
     return results  
 
 def load_wav2lip_model(checkpoint_path):
-    model = Wav2Lip()  
+    model = Wav2Lip() 
     checkpoint = torch.load(checkpoint_path, map_location=torch.device('cuda' if torch.cuda.is_available() else 'cpu'))
     model.load_state_dict(checkpoint) 
     model.eval()
