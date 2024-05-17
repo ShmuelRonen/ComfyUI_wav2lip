@@ -215,8 +215,7 @@ class Wav2Lip:
 
         os.unlink(temp_audio_path)
 
-        # Apply face enhancement using facerestore_cf if enabled
-        if face_restore == "enable":
+               if face_restore == "enable":
             facerestore_model = self.load_facerestore_model(facerestore_model)
             out_img_list = perform_face_enhancement(out_img_list, facerestore_model, facedetection, codeformer_fidelity)
 
