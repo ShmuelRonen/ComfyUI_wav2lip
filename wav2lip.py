@@ -177,6 +177,9 @@ class Wav2Lip:
     CATEGORY = "ComfyUI/Wav2Lip"
 
     def load_facerestore_model(self, model_name):
+        if model_name is None:
+            raise ValueError("El nombre del modelo no puede ser None.")
+
         if "codeformer" in model_name.lower():
             model_path = folder_paths.get_full_path("facerestore_models", model_name)
             device = model_management.get_torch_device()
@@ -194,6 +197,7 @@ class Wav2Lip:
             model_path = folder_paths.get_full_path("facerestore_models", model_name)
             sd = comfy_utils.load_torch_file(model_path, safe_load=True)
             return model_loading.load_state_dict(sd).eval()
+
 
     def todo(self, images, mode, face_detect_batch, audio=None, facedetection="retinaface_resnet50", face_restore="disable", codeformer_fidelity=0.5, facerestore_model=None):
         in_img_list = []

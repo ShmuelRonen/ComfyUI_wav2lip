@@ -3,6 +3,8 @@ import cv2, audio
 from tqdm import tqdm
 import torch, face_detection
 from models import Wav2Lip
+from pathlib import Path
+import os
 
 def get_smoothened_boxes(boxes, T):
 	for i in range(len(boxes)):
@@ -129,6 +131,16 @@ def load_model(path):
 	model = model.to(device)
 	return model.eval()
 
+def find_folder(base_path, folder_name):
+	for root, dirs, files in os.walk(base_path):
+		if folder_name in dirs:
+			return Path(root) / folder_name
+	return None
+
+def check_model_in_folder(folder_path, model_file):
+	model_path = folder_path / model_file
+	return model_path.exists()
+
 def wav2lip_(images, audio_path, face_detect_batch, mode):
 	wav = audio.load_wav(audio_path, 16000)
 	mel = audio.melspectrogram(wav)
@@ -152,7 +164,13 @@ def wav2lip_(images, audio_path, face_detect_batch, mode):
 
 	o=0
 
-	model_path = "F:\\Wav2Lip\\checkpoints\\wav2lip_gan.pth"
+	base_dir = Path(__file__).resolve().parent
+	checkpoints_path = find_folder(base_dir, "checkpoints")
+	wav2lip_model_file = "wav2lip_gan.pth"
+	model_exists = check_model_in_folder(checkpoints_path, wav2lip_model_file)
+	assert model_exists, f"Model {wav2lip_model_file} not found in {checkpoints_path}"
+
+	model_path = checkpoints_path / wav2lip_model_file
 	model = load_model(model_path)
 
 	out_images = []

@@ -1,7 +1,7 @@
 from copy import deepcopy
 
-from custom_nodes.facerestore_cf.basicsr.utils import get_root_logger
-from custom_nodes.facerestore_cf.basicsr.utils.registry import LOSS_REGISTRY
+from custom_nodes.ComfyUI_wav2lip.basicsr.utils import get_root_logger
+from custom_nodes.ComfyUI_wav2lip.basicsr.utils.registry import LOSS_REGISTRY
 from .losses import (Wav2LipCharbonnierLoss, Wav2LipGANLoss, Wav2LipL1Loss, Wav2LipMSELoss, Wav2LipPerceptualLoss, Wav2LipWeightedTVLoss, g_path_regularize,
                      gradient_penalty_loss, r1_penalty)
 

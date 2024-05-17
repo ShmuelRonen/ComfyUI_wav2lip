@@ -149,7 +149,7 @@ def get_env_info():
     import torch
     import torchvision
 
-    from custom_nodes.facerestore_cf.basicsr.version import __version__
+    from custom_nodes.ComfyUI_wav2lip.basicsr.version import __version__
     msg = r"""
                 ____                _       _____  ____
                / __ ) ____ _ _____ (_)_____/ ___/ / __ \

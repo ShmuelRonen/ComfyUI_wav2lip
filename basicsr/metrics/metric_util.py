@@ -1,6 +1,6 @@
 import numpy as np
 
-from custom_nodes.facerestore_cf.basicsr.utils.matlab_functions import bgr2ycbcr
+from custom_nodes.ComfyUI_wav2lip.basicsr.utils.matlab_functions import bgr2ycbcr
 
 
 def reorder_image(img, input_order='HWC'):
