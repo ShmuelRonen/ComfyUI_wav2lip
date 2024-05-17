@@ -120,7 +120,7 @@ def perform_face_enhancement(input_imgs, facerestore_model, facedetection, codef
     enhanced_imgs = []
     total_imgs = len(input_imgs)
     for i, img in enumerate(input_imgs, start=1):
-        print(f"Processing frame {i}/{total_imgs}") 
+        print(f"Processing frame {i}/{total_imgs}")  # הודעת הדפסה להראות התקדמות
         face_helper.clean_all()
         face_helper.read_image(img)
         face_helper.get_face_landmarks_5(only_center_face=False, resize=640, eye_dist_threshold=5)
