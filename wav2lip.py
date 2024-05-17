@@ -33,6 +33,10 @@ checkpoints_path = find_folder(base_dir, "checkpoints")
 facerestore_models = find_folder(base_dir, "facerestore_models")
 facedetection = find_folder(base_dir, "facedetection")
 
+print(f"Checkpoints path: {checkpoints_path}")
+print(f"Facerestore models path: {facerestore_models}")
+print(f"Facedetection path: {facedetection}")
+
 wav2lip_model_file = "wav2lip_gan.pth"
 model_exists = check_model_in_folder(checkpoints_path, wav2lip_model_file)
 assert model_exists, f"Model {wav2lip_model_file} not found in {checkpoints_path}"
@@ -41,9 +45,10 @@ current_dir = Path(__file__).resolve().parent
 wav2lip_path = current_dir / "wav2lip"
 if str(wav2lip_path) not in sys.path:
     sys.path.append(str(wav2lip_path))
+print(f"Wav2Lip path added to sys.path: {wav2lip_path}")
 
-from wav2lip_node import wav2lip_
 from .basicsr.utils.registry import ARCH_REGISTRY
+from .basicsr.archs.codeformer_arch import CodeFormer  # ייבוא המחלקה המתאימה
 
 def setup_directory(base_dir, dir_name, folder_paths):
     dir_path = os.path.join(base_dir, dir_name)
@@ -52,6 +57,11 @@ def setup_directory(base_dir, dir_name, folder_paths):
 
 setup_directory(folder_paths.models_dir, "facerestore_models", folder_paths)
 setup_directory(folder_paths.models_dir, "facedetection", folder_paths)
+
+current_dir = os.path.dirname(os.path.abspath(__file__))
+wav2lip_path = os.path.join(current_dir, "wav2lip")
+sys.path.append(wav2lip_path)
+from wav2lip_node import wav2lip_
 
 def process_audio(audio_data):
     audio_format = "mp3"
@@ -161,7 +171,6 @@ class Wav2Lip:
             }
         }
 
-    CATEGORY = "ComfyUI_wav2lip"    
     RETURN_TYPES = ("IMAGE", "VHS_AUDIO",)
     RETURN_NAMES = ("images", "audio",)
     FUNCTION = "todo"
@@ -171,7 +180,7 @@ class Wav2Lip:
         if "codeformer" in model_name.lower():
             model_path = folder_paths.get_full_path("facerestore_models", model_name)
             device = model_management.get_torch_device()
-            codeformer_net = ARCH_REGISTRY.get("CodeFormer")(
+            codeformer_net = CodeFormer(  # שימוש ישיר ב-CodeFormer
                 dim_embd=512,
                 codebook_size=1024,
                 n_head=8,
@@ -192,25 +201,33 @@ class Wav2Lip:
             in_img = i.numpy().squeeze()
             in_img = (in_img * 255).astype(np.uint8)
             in_img_list.append(in_img)
+
         if audio is None:
             raise ValueError("Audio input is required.")
+        
         audio_data = process_audio(audio())
+
         with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as temp_audio:
             temp_audio_path = temp_audio.name
             sf.write(temp_audio_path, audio_data, samplerate=16000)
+
         out_img_list = wav2lip_(in_img_list, temp_audio_path, face_detect_batch, mode)
+
         os.unlink(temp_audio_path)
+
+        # Apply face enhancement using facerestore_cf if enabled
         if face_restore == "enable":
-            if not facerestore_model:
-                raise ValueError("Face restore model must be provided when face restoration is enabled.")
             facerestore_model = self.load_facerestore_model(facerestore_model)
             out_img_list = perform_face_enhancement(out_img_list, facerestore_model, facedetection, codeformer_fidelity)
+
         out_tensor_list = []
         for i in out_img_list:
             out_img = i.astype(np.float32) / 255.0
             out_img = torch.from_numpy(out_img)
             out_tensor_list.append(out_img)
+
         images = torch.stack(out_tensor_list, dim=0)
+
         return (images, audio,)
 
 NODE_CLASS_MAPPINGS = {
