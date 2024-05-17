@@ -211,6 +211,7 @@ class Wav2Lip:
             temp_audio_path = temp_audio.name
             sf.write(temp_audio_path, audio_data, samplerate=16000)
 
+        model_path = checkpoints_path / wav2lip_model_file
         out_img_list = wav2lip_(in_img_list, temp_audio_path, face_detect_batch, mode)
 
         os.unlink(temp_audio_path)
