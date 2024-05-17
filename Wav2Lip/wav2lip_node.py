@@ -152,7 +152,7 @@ def wav2lip_(images, audio_path, face_detect_batch, mode):
 
 	o=0
 
-	model_path = "F:\\Wav2Lip\\checkpoints\\wav2lip_gan.pth"
+	# model_path = "F:\\Wav2Lip\\checkpoints\\wav2lip_gan.pth"
 	model = load_model(model_path)
 
 	out_images = []
