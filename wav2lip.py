@@ -161,6 +161,7 @@ class Wav2Lip:
             }
         }
 
+    CATEGORY = "ComfyUI_wav2lip"    
     RETURN_TYPES = ("IMAGE", "VHS_AUDIO",)
     RETURN_NAMES = ("images", "audio",)
     FUNCTION = "todo"
