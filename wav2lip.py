@@ -47,8 +47,12 @@ if str(wav2lip_path) not in sys.path:
     sys.path.append(str(wav2lip_path))
 print(f"Wav2Lip path added to sys.path: {wav2lip_path}")
 
-from .basicsr.utils.registry import ARCH_REGISTRY
-from .basicsr.archs.codeformer_arch import CodeFormer  # ייבוא המחלקה המתאימה
+from .basicsr.utils.registry import ARCH_REGISTRY, LOSS_REGISTRY
+from .basicsr.archs.codeformer_arch import CodeFormer
+
+# Register 'CodeFormer' if not already registered
+if 'CodeFormer' not in ARCH_REGISTRY._obj_map:
+    ARCH_REGISTRY.register(CodeFormer)
 
 def setup_directory(base_dir, dir_name, folder_paths):
     dir_path = os.path.join(base_dir, dir_name)
@@ -180,7 +184,7 @@ class Wav2Lip:
         if "codeformer" in model_name.lower():
             model_path = folder_paths.get_full_path("facerestore_models", model_name)
             device = model_management.get_torch_device()
-            codeformer_net = CodeFormer(  # שימוש ישיר ב-CodeFormer
+            codeformer_net = CodeFormer(
                 dim_embd=512,
                 codebook_size=1024,
                 n_head=8,
