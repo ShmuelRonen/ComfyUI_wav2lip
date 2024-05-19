@@ -17,6 +17,13 @@ from .facelib.detection.retinaface import retinaface
 from comfy_extras.chainner_models import model_loading
 import folder_paths
 
+from .basicsr.utils.registry import ARCH_REGISTRY, LOSS_REGISTRY
+from .basicsr.archs.codeformer_arch import CodeFormer  # Ensure this line is included
+
+# Register 'CodeFormer' if not already registered
+if 'CodeFormer' not in ARCH_REGISTRY._obj_map:
+    ARCH_REGISTRY.register(CodeFormer)
+
 def find_folder(base_path, folder_name):
     for root, dirs, files in os.walk(base_path):
         if folder_name in dirs:
@@ -27,16 +34,17 @@ def check_model_in_folder(folder_path, model_file):
     model_path = folder_path / model_file
     return model_path.exists()
 
+# Determine the base directory of the script
 base_dir = Path(__file__).resolve().parent
 
+# Original checkpoints path initialization
 checkpoints_path = find_folder(base_dir, "checkpoints")
-facerestore_models = find_folder(base_dir, "facerestore_models")
-facedetection = find_folder(base_dir, "facedetection")
 
-print(f"Checkpoints path: {checkpoints_path}")
-print(f"Facerestore models path: {facerestore_models}")
-print(f"Facedetection path: {facedetection}")
+# Updated paths using relative locations
+facerestore_models = base_dir / "models" / "Codeformer"
+facedetection = base_dir / "models" / "facedetection"
 
+# Define the wav2lip_model_file variable
 wav2lip_model_file = "wav2lip_gan.pth"
 model_exists = check_model_in_folder(checkpoints_path, wav2lip_model_file)
 assert model_exists, f"Model {wav2lip_model_file} not found in {checkpoints_path}"
@@ -46,13 +54,6 @@ wav2lip_path = current_dir / "wav2lip"
 if str(wav2lip_path) not in sys.path:
     sys.path.append(str(wav2lip_path))
 print(f"Wav2Lip path added to sys.path: {wav2lip_path}")
-
-from .basicsr.utils.registry import ARCH_REGISTRY, LOSS_REGISTRY
-from .basicsr.archs.codeformer_arch import CodeFormer
-
-# Register 'CodeFormer' if not already registered
-if 'CodeFormer' not in ARCH_REGISTRY._obj_map:
-    ARCH_REGISTRY.register(CodeFormer)
 
 def setup_directory(base_dir, dir_name, folder_paths):
     dir_path = os.path.join(base_dir, dir_name)
