@@ -12,17 +12,6 @@ import cv2
 from torchvision.transforms.functional import normalize
 import math
 from pathlib import Path
-from .facelib.utils.face_restoration_helper import FaceRestoreHelper
-from .facelib.detection.retinaface import retinaface
-from comfy_extras.chainner_models import model_loading
-import folder_paths
-
-from .basicsr.utils.registry import ARCH_REGISTRY, LOSS_REGISTRY
-from .basicsr.archs.codeformer_arch import CodeFormer  # Ensure this line is included
-
-# Register 'CodeFormer' if not already registered
-if 'CodeFormer' not in ARCH_REGISTRY._obj_map:
-    ARCH_REGISTRY.register(CodeFormer)
 
 def find_folder(base_path, folder_name):
     for root, dirs, files in os.walk(base_path):
@@ -30,21 +19,32 @@ def find_folder(base_path, folder_name):
             return Path(root) / folder_name
     return None
 
+# Import and register CodeFormer at the very beginning
+from .basicsr.utils.registry import ARCH_REGISTRY, LOSS_REGISTRY
+from .basicsr.archs.codeformer_arch import CodeFormer
+
+ARCH_REGISTRY.register(CodeFormer)
+CodeFormer = ARCH_REGISTRY.get('CodeFormer')
+
+from .facelib.utils.face_restoration_helper import FaceRestoreHelper
+from .facelib.detection.retinaface import retinaface
+from comfy_extras.chainner_models import model_loading
+import folder_paths
+
 def check_model_in_folder(folder_path, model_file):
     model_path = folder_path / model_file
     return model_path.exists()
 
-# Determine the base directory of the script
 base_dir = Path(__file__).resolve().parent
 
-# Original checkpoints path initialization
 checkpoints_path = find_folder(base_dir, "checkpoints")
+facerestore_models = find_folder(base_dir, "facerestore_models")
+facedetection = find_folder(base_dir, "facedetection")
 
-# Updated paths using relative locations
-facerestore_models = base_dir / "models" / "Codeformer"
-facedetection = base_dir / "models" / "facedetection"
+print(f"Checkpoints path: {checkpoints_path}")
+print(f"Facerestore models path: {facerestore_models}")
+print(f"Facedetection path: {facedetection}")
 
-# Define the wav2lip_model_file variable
 wav2lip_model_file = "wav2lip_gan.pth"
 model_exists = check_model_in_folder(checkpoints_path, wav2lip_model_file)
 assert model_exists, f"Model {wav2lip_model_file} not found in {checkpoints_path}"
@@ -55,6 +55,16 @@ if str(wav2lip_path) not in sys.path:
     sys.path.append(str(wav2lip_path))
 print(f"Wav2Lip path added to sys.path: {wav2lip_path}")
 
+# Import and register loss functions
+from .basicsr.losses.losses import Wav2LipL1Loss, Wav2LipMSELoss, Wav2LipCharbonnierLoss, Wav2LipPerceptualLoss, Wav2LipGANLoss, Wav2LipWeightedTVLoss
+
+LOSS_REGISTRY.register(Wav2LipL1Loss)
+LOSS_REGISTRY.register(Wav2LipMSELoss)
+LOSS_REGISTRY.register(Wav2LipCharbonnierLoss)
+LOSS_REGISTRY.register(Wav2LipPerceptualLoss)
+LOSS_REGISTRY.register(Wav2LipGANLoss)
+LOSS_REGISTRY.register(Wav2LipWeightedTVLoss)
+
 def setup_directory(base_dir, dir_name, folder_paths):
     dir_path = os.path.join(base_dir, dir_name)
     os.makedirs(dir_path, exist_ok=True)
@@ -62,6 +72,8 @@ def setup_directory(base_dir, dir_name, folder_paths):
 
 setup_directory(folder_paths.models_dir, "facerestore_models", folder_paths)
 setup_directory(folder_paths.models_dir, "facedetection", folder_paths)
+
+# END OF MODIFIED CODE
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 wav2lip_path = os.path.join(current_dir, "wav2lip")
@@ -185,7 +197,10 @@ class Wav2Lip:
         if "codeformer" in model_name.lower():
             model_path = folder_paths.get_full_path("facerestore_models", model_name)
             device = model_management.get_torch_device()
-            codeformer_net = CodeFormer(
+            if not ARCH_REGISTRY.get('CodeFormer'):
+                from .basicsr.archs.codeformer_arch import CodeFormer
+                ARCH_REGISTRY.register(CodeFormer)
+            codeformer_net = ARCH_REGISTRY.get('CodeFormer')(
                 dim_embd=512,
                 codebook_size=1024,
                 n_head=8,
