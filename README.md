@@ -5,14 +5,13 @@
 
 The Wav2Lip node is a custom node for ComfyUI that allows you to perform lip-syncing on videos using the Wav2Lip model. It takes an input video and an audio file and generates a lip-synced output video.
 
-![wav2lip](https://github.com/ShmuelRonen/ComfyUI_wav2lip/assets/80190186/bc23b61e-d09e-473a-82a9-516d0a6e14a3)
+![new wav2lip](https://github.com/ShmuelRonen/ComfyUI_wav2lip/assets/80190186/9cf251c6-56b7-4d80-a5c4-7783f3152dcb)
+
 
 
 ## Features
 
 - Lip-syncing of videos using the Wav2Lip model
-- Face detection and enhancement using GFPGAN or CodeFormer
-- Adjustable fidelity for face enhancement
 - Support for various face detection models
 
 ## Inputs
@@ -21,10 +20,6 @@ The Wav2Lip node is a custom node for ComfyUI that allows you to perform lip-syn
 - `audio`: Input audio file (required)
 - `mode`: Processing mode, either "sequential" or "repetitive" (default: "sequential")
 - `face_detect_batch`: Batch size for face detection (default: 8)
-- `facedetection`: Face detection model, options: "retinaface_resnet50", "retinaface_mobile0.25", "YOLOv5l", "YOLOv5n" (default: "retinaface_resnet50")
-- `face_restore`: Enable or disable face enhancement, options: "enable", "disable" (default: "disable")
-- `codeformer_fidelity`: Fidelity for face enhancement, range: 0.0 to 1.0 (default: 0.5)
-- `facerestore_model`: Face restoration model, options: "CodeFormer.pth", "GFPGAN.pth" (default: "CodeFormer.pth")
 
 ## Outputs
 
@@ -47,15 +42,6 @@ The Wav2Lip node is a custom node for ComfyUI that allows you to perform lip-syn
 
 To use the Wav2Lip node, you need to download the required models separately. Please follow these steps:
 
-### facerestore_models:
-
-1. Download the CodeFormer & GFPGAN models: [CodeFormer model](https://huggingface.co/datasets/lengyuchuixue/codeformer.pth/resolve/main/codeformer.pth?download=true) | [GFPGAN model](https://huggingface.co/nlightcho/gfpgan-v1.3/resolve/main/GFPGANv1.3.pth?download=true)
-2. Place the `.pth model files in the `ComfyUI\models\Codeformer` folder (if thay not exist there)
-### facedetection_models:
-
-1. Download the facedetection models: [-1-](https://github.com/xinntao/facexlib/releases/download/v0.1.0/detection_Resnet50_Final.pth) |[-2-](https://github.com/xinntao/facexlib/releases/download/v0.1.0/detection_mobilenet0.25_Final.pth) |[-3-](https://github.com/sczhou/CodeFormer/releases/download/v0.1.0/yolov5l-face.pth) |[-4-](https://github.com/sczhou/CodeFormer/releases/download/v0.1.0/yolov5n-face.pth)
-2. Place the `.pth model files in the `ComfyUI\models\facedetection` folder (if thay not exist there)
-
 ### wav2lip model:
 
 1. Download the wav2lip model: [-1-](https://huggingface.co/Nekochu/Wav2Lip/resolve/main/wav2lip_gan.pth?download=true) 
@@ -71,37 +57,9 @@ To use the Wav2Lip node, you need to download the required models separately. Pl
 3. Adjust the node settings according to your requirements:
    - Set the `mode` to "sequential" or "repetitive" based on your video processing needs.
    - Adjust the `face_detect_batch` size if needed.
-   - Select the desired `facedetection` model.
-   - Enable or disable `face_restore` to apply face enhancement.
-   - Adjust the `codeformer_fidelity` value to control the strength of face enhancement.
-   - Select the desired `facerestore_model` for face restoration.
 
 4. Execute the ComfyUI workflow to generate the lip-synced output video.
 
-## <span style="color: red;">IMPORTANT: Update for basicsr Compatibility</span>
-
-If you encounter an error like "No module named 'torchvision.transforms.functional_tensor" when trying to use the wav2lip node, you'll need to manually update a file in your Python virtual environment (venv) to ensure compatibility with the latest version of torchvision.
-
-To fix this issue, follow these steps:
-
-1. Download the updated "degradations.py" file provided by the maintainer of the wav2lip node. You can find this file in the 'service' folder.
-
-2. Locate the existing "degradations.py" file in your venv directory. The path should be similar to:
-   ```
-   path/to/your/venv/lib/site-packages/basicsr/data/degradations.py
-   ```
-
-3. Create a backup of the existing "degradations.py" file, just in case you need to revert the changes later. You can rename the file to "degradations.py.backup".
-
-4. Replace the existing "degradations.py" file with the updated file you downloaded in step 1.
-
-5. Start or restart ComfyUI.
-
-By replacing the "degradations.py" file with the updated version, you should be able to use the wav2lip node without encountering the "ModuleNotFoundError" related to torchvision.
-
-Note: If you have multiple Python environments or versions installed, make sure to replace the "degradations.py" file in the correct venv directory that is being used by your application.
-
-If you continue to face issues after making this change, please ensure that you have a compatible version of torchvision installed in your environment and that there are no other conflicting dependencies.
 
 ## Acknowledgement
 Thanks to
