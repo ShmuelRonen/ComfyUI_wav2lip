@@ -62,7 +62,7 @@ To use the Wav2Lip node, you need to download the required models separately. Pl
 5. 
 ## Fix Video combine node endless loop
 
-In case of an endless loop in the VideoCombine node, you can download the 7zip file containing the fixed node from the ComfyUI-VideoHelperSuite-fix folder in the repository and replace the existing one.
+In case of an endless loop in the VideoCombine node whene you connect audio to the node, you can download the 7zip file containing the fixed node from the ComfyUI-VideoHelperSuite-fix folder in the repository and replace the existing one.
 
 1. In the repository there are ComfyUI-VideoHelperSuite-fix folder.
 2. find the ComfyUI-VideoHelperSuite.7zip file in the folder.
