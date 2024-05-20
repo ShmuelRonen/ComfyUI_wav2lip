@@ -129,7 +129,7 @@ def load_model(path):
     model = model.to(device)
     return model.eval()
 
-def wav2lip_(images, audio_path, face_detect_batch, mode):
+def wav2lip_(images, audio_path, face_detect_batch, mode, model_path):
     wav = audio.load_wav(audio_path, 16000)
     mel = audio.melspectrogram(wav)
     print(mel.shape)
@@ -152,7 +152,7 @@ def wav2lip_(images, audio_path, face_detect_batch, mode):
 
     o=0
 
-    model_path = "F:\\Wav2Lip\\checkpoints\\wav2lip_gan.pth"
+    print(f"Load model from: {model_path}")
     model = load_model(model_path)
 
     out_images = []
@@ -178,3 +178,4 @@ def wav2lip_(images, audio_path, face_detect_batch, mode):
 
     print(f"out_images len = {len(out_images)}")
     return out_images
+
