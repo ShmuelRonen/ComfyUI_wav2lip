@@ -5,7 +5,7 @@
 
 The Wav2Lip node is a custom node for ComfyUI that allows you to perform lip-syncing on videos using the Wav2Lip model. It takes an input video and an audio file and generates a lip-synced output video.
 
-![new wav2lip](https://github.com/ShmuelRonen/ComfyUI_wav2lip/assets/80190186/9cf251c6-56b7-4d80-a5c4-7783f3152dcb)
+![new wav2lip](https://github.com/ShmuelRonen/ComfyUI_wav2lip/assets/80190186/4edc7470-071d-4b26-9369-cfc17866968a)
 
 
 
@@ -59,6 +59,17 @@ To use the Wav2Lip node, you need to download the required models separately. Pl
    - Adjust the `face_detect_batch` size if needed.
 
 4. Execute the ComfyUI workflow to generate the lip-synced output video.
+5. 
+## Fix Video combine node endless loop
+
+In case of an endless loop in the VideoCombine node, you can download the 7zip file containing the fixed node from the ComfyUI-VideoHelperSuite-fix folder in the repository and replace the existing one.
+
+1. In the repository there are ComfyUI-VideoHelperSuite-fix folder.
+2. find the ComfyUI-VideoHelperSuite.7zip file in the folder.
+3. Extract the contents of the ComfyUI-VideoHelperSuite.7zip folder to a temporary location on your computer.
+4. Locate the existing ComfyUI-VideoHelperSuite node in your ComfyUI/custom_nodes folder.
+5. Replace the existing ComfyUI-VideoHelperSuite node with the fix one.
+6. Restart ComfyUI to apply the changes.
 
 
 ## Acknowledgement
