@@ -18,7 +18,7 @@ def find_folder(base_path, folder_name):
 
 def check_model_in_folder(folder_path, model_file):
     model_path = folder_path / model_file
-    return model_path.exists()
+    return model_path.exists(), model_path
 
 base_dir = Path(__file__).resolve().parent
 
@@ -26,7 +26,7 @@ checkpoints_path = find_folder(base_dir, "checkpoints")
 print(f"Checkpoints path: {checkpoints_path}")
 
 wav2lip_model_file = "wav2lip_gan.pth"
-model_exists = check_model_in_folder(checkpoints_path, wav2lip_model_file)
+model_exists, model_path = check_model_in_folder(checkpoints_path, wav2lip_model_file)
 assert model_exists, f"Model {wav2lip_model_file} not found in {checkpoints_path}"
 
 current_dir = Path(__file__).resolve().parent
@@ -40,8 +40,6 @@ def setup_directory(base_dir, dir_name):
     os.makedirs(dir_path, exist_ok=True)
 
 setup_directory(base_dir, "facedetection")
-
-# END OF MODIFIED CODE
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 wav2lip_path = os.path.join(current_dir, "wav2lip")
@@ -93,7 +91,6 @@ class Wav2Lip:
             temp_audio_path = temp_audio.name
             sf.write(temp_audio_path, audio_data, samplerate=16000)
 
-        model_path = checkpoints_path / wav2lip_model_file
         out_img_list = wav2lip_(in_img_list, temp_audio_path, face_detect_batch, mode)
 
         os.unlink(temp_audio_path)
