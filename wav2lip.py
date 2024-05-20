@@ -22,11 +22,14 @@ def check_model_in_folder(folder_path, model_file):
 
 base_dir = Path(__file__).resolve().parent
 
+print(f"Base directory: {base_dir}")
+
 checkpoints_path = find_folder(base_dir, "checkpoints")
 print(f"Checkpoints path: {checkpoints_path}")
 
 wav2lip_model_file = "wav2lip_gan.pth"
 model_exists, model_path = check_model_in_folder(checkpoints_path, wav2lip_model_file)
+print(f"Model path: {model_path}")
 assert model_exists, f"Model {wav2lip_model_file} not found in {checkpoints_path}"
 
 current_dir = Path(__file__).resolve().parent
@@ -38,12 +41,18 @@ print(f"Wav2Lip path added to sys.path: {wav2lip_path}")
 def setup_directory(base_dir, dir_name):
     dir_path = os.path.join(base_dir, dir_name)
     os.makedirs(dir_path, exist_ok=True)
+    print(f"Directory created or exists: {dir_path}")
 
 setup_directory(base_dir, "facedetection")
+
+# END OF MODIFIED CODE
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 wav2lip_path = os.path.join(current_dir, "wav2lip")
 sys.path.append(wav2lip_path)
+print(f"Current directory: {current_dir}")
+print(f"Wav2Lip path: {wav2lip_path}")
+
 from wav2lip_node import wav2lip_
 
 def process_audio(audio_data):
@@ -91,7 +100,7 @@ class Wav2Lip:
             temp_audio_path = temp_audio.name
             sf.write(temp_audio_path, audio_data, samplerate=16000)
 
-        out_img_list = wav2lip_(in_img_list, temp_audio_path, face_detect_batch, mode)
+        out_img_list = wav2lip_(in_img_list, temp_audio_path, face_detect_batch, mode, model_path)
 
         os.unlink(temp_audio_path)
 
@@ -104,6 +113,7 @@ class Wav2Lip:
         images = torch.stack(out_tensor_list, dim=0)
 
         return (images, audio,)
+
 
 NODE_CLASS_MAPPINGS = {
     "Wav2Lip": Wav2Lip,
