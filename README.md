@@ -59,7 +59,7 @@ To use the Wav2Lip node, you need to download the required models separately. Pl
    - Adjust the `face_detect_batch` size if needed.
 
 4. Execute the ComfyUI workflow to generate the lip-synced output video.
-5. 
+
 ## Fix Video combine node endless loop
 
 In case of an endless loop in the VideoCombine node whene you connect audio to the node, you can download the 7zip file containing the fixed node from the ComfyUI-VideoHelperSuite-fix folder in the repository and replace the existing one.
