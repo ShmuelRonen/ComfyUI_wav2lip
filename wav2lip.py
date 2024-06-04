@@ -53,7 +53,7 @@ sys.path.append(wav2lip_path)
 print(f"Current directory: {current_dir}")
 print(f"Wav2Lip path: {wav2lip_path}")
 
-from wav2lip_node import wav2lip_
+from .Wav2Lip.wav2lip_node import wav2lip_
 
 def process_audio(audio_data):
     audio_format = "mp3"

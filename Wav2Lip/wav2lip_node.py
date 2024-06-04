@@ -1,8 +1,11 @@
 import numpy as np
-import cv2, audio
+import cv2
+from . import audio
 from tqdm import tqdm
-import torch, face_detection
-from models import Wav2Lip
+import torch
+from . import face_detection
+#import .face_detection
+from .models import Wav2Lip
 
 def get_smoothened_boxes(boxes, T):
     for i in range(len(boxes)):

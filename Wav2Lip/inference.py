@@ -4,8 +4,9 @@ import scipy, cv2, os, sys, argparse, audio
 import json, subprocess, random, string
 from tqdm import tqdm
 from glob import glob
-import torch, face_detection
-from models import Wav2Lip
+import torch
+import .face_detection
+from .models import Wav2Lip
 import platform
 import shutil
 

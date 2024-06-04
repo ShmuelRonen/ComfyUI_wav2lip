@@ -1,9 +1,9 @@
 from os.path import dirname, join, basename, isfile
 from tqdm import tqdm
 
-from models import SyncNet_color as SyncNet
-from models import Wav2Lip, Wav2Lip_disc_qual
-import audio
+from .models import SyncNet_color as SyncNet
+from .models import Wav2Lip, Wav2Lip_disc_qual
+import .audio
 
 import torch
 from torch import nn
@@ -16,7 +16,7 @@ import numpy as np
 from glob import glob
 
 import os, random, cv2, argparse
-from hparams import hparams, get_image_list
+from .hparams import hparams, get_image_list
 
 parser = argparse.ArgumentParser(description='Code to train the Wav2Lip model WITH the visual quality discriminator')
 
