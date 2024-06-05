@@ -3,7 +3,7 @@
 
 import time, pdb, argparse, subprocess, pickle, os, gzip, glob
 
-from SyncNetInstance_calc_scores import *
+from .SyncNetInstance_calc_scores import *
 
 # ==================== PARSE ARGUMENT ====================
 

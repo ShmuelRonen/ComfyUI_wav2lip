@@ -6,7 +6,7 @@ import glob
 import os
 from tqdm import tqdm
 
-from SyncNetInstance_calc_scores import *
+from .SyncNetInstance_calc_scores import *
 
 # ==================== LOAD PARAMS ====================
 

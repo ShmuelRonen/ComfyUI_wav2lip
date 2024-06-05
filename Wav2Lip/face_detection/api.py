@@ -12,7 +12,7 @@ except BaseException:
 
 from .models import FAN, ResNetDepth
 from .utils import *
-
+from .detection import sfd
 
 class LandmarksType(Enum):
     """Enum class defining the type of landmarks to detect.
@@ -57,9 +57,7 @@ class FaceAlignment:
             torch.backends.cudnn.benchmark = True
 
         # Get the face detector
-        face_detector_module = __import__('face_detection.detection.' + face_detector,
-                                          globals(), locals(), [face_detector], 0)
-        self.face_detector = face_detector_module.FaceDetector(device=device, verbose=verbose)
+        self.face_detector = sfd.FaceDetector(device=device, verbose=verbose)
 
     def get_detections_for_batch(self, images):
         images = images[..., ::-1]

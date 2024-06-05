@@ -6,10 +6,9 @@ from tqdm import tqdm
 from glob import glob
 import torch
 
-sys.path.append('../')
-import audio
-import face_detection
-from models import Wav2Lip
+import ..audio
+import ..face_detection
+from ..models import Wav2Lip
 
 parser = argparse.ArgumentParser(description='Code to generate results for test filelists')
 
