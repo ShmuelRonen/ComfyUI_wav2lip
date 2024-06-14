@@ -1,0 +1,15 @@
+[project]
+name = "comfyui_wav2lip"
+description = "The Wav2Lip node is a custom node for ComfyUI that allows you to perform lip-syncing on videos using the Wav2Lip model. It takes an input video and an audio file and generates a lip-synced output video."
+version = "1.0.0"
+license = "LICENSE"
+dependencies = ["numpy", "torch", "pydub", "soundfile", "opencv-python", "torchvision", "pathlib", "librosa"]
+
+[project.urls]
+Repository = "https://github.com/ShmuelRonen/ComfyUI_wav2lip"
+#  Used by Comfy Registry https://comfyregistry.org
+
+[tool.comfy]
+PublisherId = ""
+DisplayName = "ComfyUI_wav2lip"
+Icon = ""
