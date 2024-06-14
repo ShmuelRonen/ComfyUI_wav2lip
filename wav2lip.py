@@ -73,6 +73,7 @@ class Wav2Lip:
                 "images": ("IMAGE",),
                 "mode": (["sequential", "repetitive"], {"default": "sequential"}),
                 "face_detect_batch": ("INT", {"default": 8, "min": 1, "max": 100}),
+                "framerate": ("FLOAT", {"default": 30}),
             },
             "optional": {
                 "audio": ("VHS_AUDIO",)
@@ -84,7 +85,7 @@ class Wav2Lip:
     FUNCTION = "todo"
     CATEGORY = "ComfyUI/Wav2Lip"
 
-    def todo(self, images, mode, face_detect_batch, audio=None):
+    def todo(self, images, mode, face_detect_batch, framerate, audio=None):
         in_img_list = []
         for i in images:
             in_img = i.numpy().squeeze()
@@ -100,7 +101,7 @@ class Wav2Lip:
             temp_audio_path = temp_audio.name
             sf.write(temp_audio_path, audio_data, samplerate=16000)
 
-        out_img_list = wav2lip_(in_img_list, temp_audio_path, face_detect_batch, mode, model_path)
+        out_img_list = wav2lip_(in_img_list, temp_audio_path, face_detect_batch, mode, model_path, framerate)
 
         os.unlink(temp_audio_path)
 
