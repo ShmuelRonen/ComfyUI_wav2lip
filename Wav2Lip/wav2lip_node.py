@@ -132,13 +132,13 @@ def load_model(path):
     model = model.to(device)
     return model.eval()
 
-def wav2lip_(images, audio_path, face_detect_batch, mode, model_path):
+def wav2lip_(images, audio_path, face_detect_batch, mode, model_path, frame_rate=30):
     wav = audio.load_wav(audio_path, 16000)
     mel = audio.melspectrogram(wav)
     print(mel.shape)
 
     mel_chunks = []
-    mel_idx_multiplier = 80./30 
+    mel_idx_multiplier = 80./frame_rate 
     i = 0
     while 1:
         start_idx = int(i * mel_idx_multiplier)
