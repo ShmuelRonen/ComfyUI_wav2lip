@@ -95,6 +95,16 @@ def process_batch(img_batch, mel_batch, frame_batch, coords_batch):
 
     return img_batch, mel_batch, frame_batch, coords_batch
 
+def create_feathered_mask(height, width, feather_amount=0.2):
+    mask = np.zeros((height, width), dtype=np.float32)
+    center = (width // 2, height // 2)
+    radius = min(width, height) // 2
+    cv2.circle(mask, center, radius, 1.0, -1, cv2.LINE_AA)
+    
+    feather_pixels = int(min(width, height) * feather_amount)
+    mask = cv2.GaussianBlur(mask, (feather_pixels * 2 + 1, feather_pixels * 2 + 1), 0)
+    return mask
+
 mel_step_size = 16
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 print(f'Using {device} for inference.')
@@ -141,9 +151,24 @@ def wav2lip_(images, audio_path, face_detect_batch, mode, model_path, frame_rate
             y1, y2, x1, x2 = c
             p = cv2.resize(p.astype(np.uint8), (x2 - x1, y2 - y1))
     
+            # Create a feathered mask for smooth blending
+            mask = create_feathered_mask(y2 - y1, x2 - x1)
+            
+            # Expand mask to 3 channels to match the image shape
+            mask = np.expand_dims(mask, axis=2)
+            mask = np.repeat(mask, 3, axis=2)
+            
             # Apply lip sync intensity
-            original_face = f[y1:y2, x1:x2]
-            f[y1:y2, x1:x2] = cv2.addWeighted(original_face, 1 - lip_sync_intensity, p, lip_sync_intensity, 0)
+            original_face = f[y1:y2, x1:x2].astype(np.float32)
+            p = p.astype(np.float32)
+            
+            # Blend using the feathered mask
+            blended_face = original_face * (1 - mask * lip_sync_intensity) + p * (mask * lip_sync_intensity)
+            blended_face = blended_face.astype(np.uint8)
+            
+            # Copy the blended face back to the frame
+            f[y1:y2, x1:x2] = blended_face
+            
             out_images.append(f)
 
     print(f"Number of output images: {len(out_images)}")
