@@ -15,6 +15,13 @@ def get_smoothened_boxes(boxes, T):
         boxes[i] = np.mean(window, axis=0)
     return boxes
 
+def create_smooth_mask(shape, padding=20):
+    mask = np.ones(shape, dtype=np.float32)
+    mask[:padding, :] = mask[-padding:, :] = mask[:, :padding] = mask[:, -padding:] = 0
+    mask = cv2.GaussianBlur(mask, (0, 0), sigmaX=padding, sigmaY=padding)
+    return mask[:, :, np.newaxis]
+
+
 def face_detect(images, face_detect_batch):
     detector = face_detection.FaceAlignment(face_detection.LandmarksType._2D, 
                                             flip_input=False, device=device)
@@ -185,7 +192,11 @@ def wav2lip_(images, audio_path, face_detect_batch, mode, model_path, frame_rate
             original_face = f[y1:y2, x1:x2]
             p_adjusted = adjust_lipsync_intensity(original_face, p_smoothed, lipsync_intensity)
             
-            f[y1:y2, x1:x2] = p_adjusted
+            # Create smooth mask for blending
+            mask = create_smooth_mask(p_adjusted.shape[:2])
+            
+            # Blend using the smooth mask
+            f[y1:y2, x1:x2] = (mask * p_adjusted + (1 - mask) * original_face).astype(np.uint8)
             out_images.append(f)
 
     print(f"out_images len = {len(out_images)}")
