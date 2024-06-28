@@ -6,10 +6,10 @@ license = "LICENSE"
 dependencies = ["numpy", "torch", "pydub", "soundfile", "opencv-python", "torchvision", "pathlib", "librosa"]
 
 [project.urls]
-Repository = "https://github.com/GeekyGhost/ComfyUI_wav2lip.git"
+Repository = "https://github.com/ShmuelRonen/ComfyUI_wav2lip"
 #  Used by Comfy Registry https://comfyregistry.org
 
 [tool.comfy]
 PublisherId = ""
-DisplayName = "Fork_Enhanced_ComfyUI_wav2lip"
+DisplayName = "ComfyUI_wav2lip"
 Icon = ""
