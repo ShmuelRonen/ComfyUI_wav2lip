@@ -15,11 +15,26 @@ def get_smoothened_boxes(boxes, T):
         boxes[i] = np.mean(window, axis=0)
     return boxes
 
-def create_smooth_mask(shape, padding=42):
+def create_smooth_mask(shape, padding=50):
     mask = np.ones(shape, dtype=np.float32)
     mask[:padding, :] = mask[-padding:, :] = mask[:, :padding] = mask[:, -padding:] = 0
-    mask = cv2.GaussianBlur(mask, (0, 0), sigmaX=padding, sigmaY=padding)
+    mask = cv2.GaussianBlur(mask, (0, 0), sigmaX=padding/2, sigmaY=padding/2)
     return mask[:, :, np.newaxis]
+
+def apply_color_correction(target, source):
+    target_lab = cv2.cvtColor(target, cv2.COLOR_BGR2LAB).astype(np.float32)
+    source_lab = cv2.cvtColor(source, cv2.COLOR_BGR2LAB).astype(np.float32)
+    
+    target_l, target_a, target_b = cv2.split(target_lab)
+    source_l, source_a, source_b = cv2.split(source_lab)
+    
+    target_l = (target_l - np.mean(target_l)) * (np.std(source_l) / np.std(target_l)) + np.mean(source_l)
+    target_a = (target_a - np.mean(target_a)) * (np.std(source_a) / np.std(target_a)) + np.mean(source_a)
+    target_b = (target_b - np.mean(target_b)) * (np.std(source_b) / np.std(target_b)) + np.mean(source_b)
+    
+    corrected_lab = cv2.merge([target_l, target_a, target_b])
+    corrected_bgr = cv2.cvtColor(corrected_lab.astype(np.uint8), cv2.COLOR_LAB2BGR)
+    return corrected_bgr
 
 
 def face_detect(images, face_detect_batch):
