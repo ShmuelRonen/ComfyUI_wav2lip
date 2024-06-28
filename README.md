@@ -1,6 +1,8 @@
 # ComfyUI_wav2lip
 
-#Geeky Ghost Changes lol
+#Geeky Ghost Changes
+
+The video didn't always work with the static settings and sometines it comes off extremely subtle, so I made some changes to get a bit more out of it. Little clearner, little smootger when combing the code changes with the other nodes I use in the workflow it's in. 
 
 Added a slider and some code to adjust the intensity of the lipsync. Had a good run, then an issue with green teeth, but then fixed it lol. 
 
