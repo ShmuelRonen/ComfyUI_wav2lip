@@ -4,6 +4,8 @@
 
 Added a slider and some code to adjust the intensity of the lipsync. Had a good run, then an issue with green teeth, but then fixed it lol. 
 
+https://civitai.com/models/542632/improved-wav2lip-workflow
+
 
 <img width="899" alt="Screenshot 2024-06-27 222825" src="https://github.com/GeekyGhost/ComfyUI_wav2lip/assets/111990299/3de7f6b3-5096-4dc0-866c-f66b9a2459b7">
 
