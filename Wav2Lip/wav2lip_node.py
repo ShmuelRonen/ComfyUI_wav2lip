@@ -15,7 +15,7 @@ def get_smoothened_boxes(boxes, T):
         boxes[i] = np.mean(window, axis=0)
     return boxes
 
-def create_smooth_mask(shape, padding=20):
+def create_smooth_mask(shape, padding=30):
     mask = np.ones(shape, dtype=np.float32)
     mask[:padding, :] = mask[-padding:, :] = mask[:, :padding] = mask[:, -padding:] = 0
     mask = cv2.GaussianBlur(mask, (0, 0), sigmaX=padding, sigmaY=padding)
