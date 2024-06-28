@@ -5,6 +5,9 @@
 Added a slider and some code to adjust the intensity of the lipsync. Had a good run, then an issue with green teeth, but then fixed it lol. 
 
 
+<img width="721" alt="Screenshot 2024-06-27 205839" src="https://github.com/GeekyGhost/ComfyUI_wav2lip/assets/111990299/2d948e62-1729-415f-9e97-11477cbc428a">
+
+
 
 
 ## Wav2Lip Node for ComfyUI
