@@ -1,5 +1,11 @@
 # ComfyUI_wav2lip
 
+#Geeky Ghost Changes lol
+
+Added a slider and some code to adjust the intensity of the lipsync. Had a good run, then an issue with green teeth, but then fixed it lol. 
+
+
+
 
 ## Wav2Lip Node for ComfyUI
 
