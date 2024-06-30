@@ -4,7 +4,6 @@ from . import audio
 from tqdm import tqdm
 import torch
 from . import face_detection
-#import .face_detection
 from .models import Wav2Lip
 
 def get_smoothened_boxes(boxes, T):
@@ -15,6 +14,28 @@ def get_smoothened_boxes(boxes, T):
             window = boxes[i : i + T]
         boxes[i] = np.mean(window, axis=0)
     return boxes
+
+def create_smooth_mask(shape, padding=44):
+    mask = np.ones(shape, dtype=np.float32)
+    mask[:padding, :] = mask[-padding:, :] = mask[:, :padding] = mask[:, -padding:] = 0
+    mask = cv2.GaussianBlur(mask, (0, 0), sigmaX=padding/2, sigmaY=padding/2)
+    return mask[:, :, np.newaxis]
+
+def apply_color_correction(target, source):
+    target_lab = cv2.cvtColor(target, cv2.COLOR_BGR2LAB).astype(np.float32)
+    source_lab = cv2.cvtColor(source, cv2.COLOR_BGR2LAB).astype(np.float32)
+    
+    target_l, target_a, target_b = cv2.split(target_lab)
+    source_l, source_a, source_b = cv2.split(source_lab)
+    
+    target_l = (target_l - np.mean(target_l)) * (np.std(source_l) / np.std(target_l)) + np.mean(source_l)
+    target_a = (target_a - np.mean(target_a)) * (np.std(source_a) / np.std(target_a)) + np.mean(source_a)
+    target_b = (target_b - np.mean(target_b)) * (np.std(source_b) / np.std(target_b)) + np.mean(source_b)
+    
+    corrected_lab = cv2.merge([target_l, target_a, target_b])
+    corrected_bgr = cv2.cvtColor(corrected_lab.astype(np.uint8), cv2.COLOR_LAB2BGR)
+    return corrected_bgr
+
 
 def face_detect(images, face_detect_batch):
     detector = face_detection.FaceAlignment(face_detection.LandmarksType._2D, 
@@ -132,7 +153,14 @@ def load_model(path):
     model = model.to(device)
     return model.eval()
 
-def wav2lip_(images, audio_path, face_detect_batch, mode, model_path, frame_rate=30):
+def adjust_lipsync_intensity(original, prediction, intensity):
+    return cv2.addWeighted(original, 1 - intensity, prediction, intensity, 0)
+
+def apply_smoothing(image, smoothing_factor):
+    kernel_size = max(3, int(smoothing_factor * 2) | 1)
+    return cv2.GaussianBlur(image, (kernel_size, kernel_size), 0)
+
+def wav2lip_(images, audio_path, face_detect_batch, mode, model_path, frame_rate=30, lipsync_intensity=1.0, smoothing_factor=0.5):
     wav = audio.load_wav(audio_path, 16000)
     mel = audio.melspectrogram(wav)
     print(mel.shape)
@@ -153,8 +181,6 @@ def wav2lip_(images, audio_path, face_detect_batch, mode, model_path, frame_rate
     batch_size = 128
     gen = datagen(images.copy(), mel_chunks, face_detect_batch, mode)
 
-    o=0
-
     print(f"Load model from: {model_path}")
     model = load_model(model_path)
 
@@ -164,7 +190,6 @@ def wav2lip_(images, audio_path, face_detect_batch, mode, model_path, frame_rate
         
         img_batch = torch.FloatTensor(np.transpose(img_batch, (0, 3, 1, 2))).to(device)
         mel_batch = torch.FloatTensor(np.transpose(mel_batch, (0, 3, 1, 2))).to(device)
-        #save frame
         
         with torch.no_grad():
             pred = model(mel_batch, img_batch)
@@ -174,11 +199,20 @@ def wav2lip_(images, audio_path, face_detect_batch, mode, model_path, frame_rate
         for p, f, c in zip(pred, frames, coords):
             y1, y2, x1, x2 = c
             p = cv2.resize(p.astype(np.uint8), (x2 - x1, y2 - y1))
-    
-            f[y1:y2, x1:x2] = p
+            
+            # Apply smoothing
+            p_smoothed = apply_smoothing(p, smoothing_factor)
+            
+            # Adjust lipsync intensity
+            original_face = f[y1:y2, x1:x2]
+            p_adjusted = adjust_lipsync_intensity(original_face, p_smoothed, lipsync_intensity)
+            
+            # Create smooth mask for blending
+            mask = create_smooth_mask(p_adjusted.shape[:2])
+            
+            # Blend using the smooth mask
+            f[y1:y2, x1:x2] = (mask * p_adjusted + (1 - mask) * original_face).astype(np.uint8)
             out_images.append(f)
-            o+=1
 
     print(f"out_images len = {len(out_images)}")
     return out_images
-

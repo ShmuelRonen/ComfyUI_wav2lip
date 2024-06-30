@@ -45,8 +45,6 @@ def setup_directory(base_dir, dir_name):
 
 setup_directory(base_dir, "facedetection")
 
-# END OF MODIFIED CODE
-
 current_dir = os.path.dirname(os.path.abspath(__file__))
 wav2lip_path = os.path.join(current_dir, "wav2lip")
 sys.path.append(wav2lip_path)
@@ -74,6 +72,8 @@ class Wav2Lip:
                 "mode": (["sequential", "repetitive"], {"default": "sequential"}),
                 "face_detect_batch": ("INT", {"default": 8, "min": 1, "max": 100}),
                 "framerate": ("FLOAT", {"default": 30}),
+                "lipsync_intensity": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 2.0}),
+                "smoothing_factor": ("FLOAT", {"default": 0.5, "min": 0.0, "max": 5.0}),
             },
             "optional": {
                 "audio": ("VHS_AUDIO",)
@@ -82,10 +82,10 @@ class Wav2Lip:
 
     RETURN_TYPES = ("IMAGE", "VHS_AUDIO",)
     RETURN_NAMES = ("images", "audio",)
-    FUNCTION = "todo"
+    FUNCTION = "process"
     CATEGORY = "ComfyUI/Wav2Lip"
 
-    def todo(self, images, mode, face_detect_batch, framerate, audio=None):
+    def process(self, images, mode, face_detect_batch, framerate, lipsync_intensity, smoothing_factor, audio=None):
         in_img_list = []
         for i in images:
             in_img = i.numpy().squeeze()
@@ -101,7 +101,7 @@ class Wav2Lip:
             temp_audio_path = temp_audio.name
             sf.write(temp_audio_path, audio_data, samplerate=16000)
 
-        out_img_list = wav2lip_(in_img_list, temp_audio_path, face_detect_batch, mode, model_path, framerate)
+        out_img_list = wav2lip_(in_img_list, temp_audio_path, face_detect_batch, mode, model_path, framerate, lipsync_intensity, smoothing_factor)
 
         os.unlink(temp_audio_path)
 
@@ -114,7 +114,6 @@ class Wav2Lip:
         images = torch.stack(out_tensor_list, dim=0)
 
         return (images, audio,)
-
 
 NODE_CLASS_MAPPINGS = {
     "Wav2Lip": Wav2Lip,
