@@ -1,20 +1,5 @@
 # ComfyUI_wav2lip
 
-#Geeky Ghost Changes
-
-The video didn't always work with the static settings and sometines it comes off extremely subtle, so I made some changes to get a bit more out of it. Little clearner, little smootger when combining the code changes with the other nodes I use in the workflow it's in. 
-
-Added a slider and some code to adjust the intensity of the lipsync. Had a good run, then an issue with green teeth, but then fixed it lol. 
-
-https://civitai.com/models/542632/improved-wav2lip-workflow
-
-
-<img width="899" alt="Screenshot 2024-06-27 222825" src="https://github.com/GeekyGhost/ComfyUI_wav2lip/assets/111990299/3de7f6b3-5096-4dc0-866c-f66b9a2459b7">
-
-
-
-
-
 ## Wav2Lip Node for ComfyUI
 
 The Wav2Lip node is a custom node for ComfyUI that allows you to perform lip-syncing on videos using the Wav2Lip model. It takes an input video and an audio file and generates a lip-synced output video.
