@@ -13,6 +13,7 @@ The Wav2Lip node is a custom node for ComfyUI that allows you to perform lip-syn
 
 - Lip-syncing of videos using the Wav2Lip model
 - Support for various face detection models
+- Audio path upload for input audio file
 
 ## Inputs
 
