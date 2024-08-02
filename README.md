@@ -44,7 +44,7 @@ To use the Wav2Lip node, you need to download the required models separately. Pl
 
 ### wav2lip model:
 
-1. Download the wav2lip model: [-1-](https://huggingface.co/Nekochu/Wav2Lip/resolve/main/wav2lip_gan.pth?download=true) 
+1. Download the wav2lip model: [-model-](https://huggingface.co/Nekochu/Wav2Lip/resolve/main/wav2lip_gan.pth?download=true) 
 2. Place the `.pth model file in the `custom_nodes\ComfyUI_wav2lip\Wav2Lip\checkpoints` folder
 3. Start or restart ComfyUI.
 
@@ -60,16 +60,7 @@ To use the Wav2Lip node, you need to download the required models separately. Pl
 
 4. Execute the ComfyUI workflow to generate the lip-synced output video.
 
-## Fix Video combine node endless loop
 
-In case of an endless loop in the VideoCombine node when you connect audio to the node, you can download the 7zip file containing the fixed node from the ComfyUI-VideoHelperSuite-fix folder in the repository and replace the existing one.
-
-1. In the repository there are ComfyUI-VideoHelperSuite-fix folder.
-2. find the ComfyUI-VideoHelperSuite.7zip file in the folder.
-3. Extract the contents of the ComfyUI-VideoHelperSuite.7zip folder to a temporary location on your computer.
-4. Locate the existing ComfyUI-VideoHelperSuite node in your ComfyUI/custom_nodes folder.
-5. Replace the existing ComfyUI-VideoHelperSuite node with the fix one.
-6. Restart ComfyUI to apply the changes.
 
 
 ## Acknowledgement
