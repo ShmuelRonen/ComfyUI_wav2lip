@@ -119,7 +119,24 @@ def _load(model_path):
                                 map_location=lambda storage, loc: storage)
     return checkpoint
 
+def get_onnx_input_names(model):
+    """Get the input names from an ONNX model"""
+    return [input.name for input in model.get_inputs()]
+
 def load_model(path):
+    if str(path).lower().endswith('.onnx'):
+        import onnxruntime as ort
+        model = ort.InferenceSession(str(path), providers=['CUDAExecutionProvider', 'CPUExecutionProvider'])
+        # Store the input names mapping in the model object
+        input_names = get_onnx_input_names(model)
+        if len(input_names) != 2:
+            raise ValueError(f"Expected 2 inputs for ONNX model, got {len(input_names)}: {input_names}")
+        model.input_names_mapping = {
+            'mel': input_names[0],  # First input is typically for audio features
+            'img': input_names[1]   # Second input is typically for image
+        }
+        return model
+        
     model = Wav2Lip()
     print("Load checkpoint from: {}".format(path))
     checkpoint = _load(path)
@@ -128,7 +145,6 @@ def load_model(path):
     for k, v in s.items():
         new_s[k.replace('module.', '')] = v
     model.load_state_dict(new_s)
-
     model = model.to(device)
     return model.eval()
 
@@ -157,17 +173,25 @@ def wav2lip_(images, audio_path, face_detect_batch, mode, model_path):
 
     print(f"Load model from: {model_path}")
     model = load_model(model_path)
-
+    
     out_images = []
     for i, (img_batch, mel_batch, frames, coords) in enumerate(tqdm(gen, 
                                             total=int(np.ceil(float(len(mel_chunks))/batch_size)))):
         
         img_batch = torch.FloatTensor(np.transpose(img_batch, (0, 3, 1, 2))).to(device)
         mel_batch = torch.FloatTensor(np.transpose(mel_batch, (0, 3, 1, 2))).to(device)
-        #save frame
         
         with torch.no_grad():
-            pred = model(mel_batch, img_batch)
+            if isinstance(model, torch.nn.Module):
+                pred = model(mel_batch, img_batch)
+            else:  # ONNX model
+                # Use the stored input names mapping
+                input_dict = {
+                    model.input_names_mapping['mel']: mel_batch.cpu().numpy(),
+                    model.input_names_mapping['img']: img_batch.cpu().numpy()
+                }
+                pred = model.run(None, input_dict)[0]
+                pred = torch.from_numpy(pred)
 
         pred = pred.cpu().numpy().transpose(0, 2, 3, 1) * 255.
 

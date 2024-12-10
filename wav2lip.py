@@ -11,8 +11,6 @@ from pathlib import Path
 import subprocess
 import hashlib
 
-# Removed unused imports: pydub, soundfile, subprocess
-
 def find_folder(base_path, folder_name):
     for root, dirs, files in os.walk(base_path):
         if folder_name in dirs:
@@ -20,14 +18,32 @@ def find_folder(base_path, folder_name):
     return None
 
 def check_model_in_folder(folder_path, model_file):
+    """
+    Check if a model file exists in the specified folder
+    Returns (exists, full_path)
+    """
+    if folder_path is None:
+        return False, None
     model_path = folder_path / model_file
     return model_path.exists(), model_path
+
+def get_supported_models(checkpoints_path):
+    """Scan the checkpoints directory for supported model files."""
+    supported_extensions = ('.pth', '.pt', '.onnx')
+    model_files = []
+    
+    if checkpoints_path and checkpoints_path.exists():
+        for file in checkpoints_path.iterdir():
+            if file.suffix.lower() in supported_extensions:
+                model_files.append(file.name)
+    
+    return sorted(model_files) if model_files else ["wav2lip_gan.pth"]
 
 base_dir = Path(__file__).resolve().parent
 
 print(f"Base directory: {base_dir}")
 
-checkpoints_path = find_folder(base_dir, "checkpoints")
+checkpoints_path = find_folder(base_dir / "Wav2Lip", "checkpoints")
 print(f"Checkpoints path: {checkpoints_path}")
 
 wav2lip_model_file = "wav2lip_gan.pth"
@@ -36,7 +52,7 @@ print(f"Model path: {model_path}")
 assert model_exists, f"Model {wav2lip_model_file} not found in {checkpoints_path}"
 
 current_dir = Path(__file__).resolve().parent
-wav2lip_path = current_dir / "wav2lip"
+wav2lip_path = current_dir / "Wav2Lip"
 if str(wav2lip_path) not in sys.path:
     sys.path.append(str(wav2lip_path))
 print(f"Wav2Lip path added to sys.path: {wav2lip_path}")
@@ -48,18 +64,7 @@ def setup_directory(base_dir, dir_name):
 
 setup_directory(base_dir, "facedetection")
 
-current_dir = os.path.dirname(os.path.abspath(__file__))
-wav2lip_path = os.path.join(current_dir, "wav2lip")
-sys.path.append(wav2lip_path)
-print(f"Current directory: {current_dir}")
-print(f"Wav2Lip path: {wav2lip_path}")
-
 from .Wav2Lip.wav2lip_node import wav2lip_
-
-# Removed process_audio, get_ffmpeg_path, get_audio, validate_path, hash_path functions
-
-import hashlib
-import folder_paths  # Assuming folder_paths is a module you have for handling paths
 
 class LoadAudio:
     @classmethod
@@ -100,22 +105,29 @@ class LoadAudio:
 class Wav2Lip:
     @classmethod
     def INPUT_TYPES(cls):
+        available_models = get_supported_models(checkpoints_path)
         return {
             "required": {
                 "images": ("IMAGE",),
                 "mode": (["sequential", "repetitive"], {"default": "sequential"}),
                 "face_detect_batch": ("INT", {"default": 8, "min": 1, "max": 100}),
-                "audio": ("AUDIO", )
+                "audio": ("AUDIO",),
+                "model_file": (available_models, {"default": "wav2lip_gan.pth"}),
             },
         }
 
     CATEGORY = "ComfyUI/Wav2Lip"
 
-    RETURN_TYPES = ("IMAGE", "AUDIO", )
-    RETURN_NAMES = ("images", "audio", )
+    RETURN_TYPES = ("IMAGE", "AUDIO",)
+    RETURN_NAMES = ("images", "audio",)
     FUNCTION = "process"
 
-    def process(self, images, mode, face_detect_batch, audio):
+    def process(self, images, mode, face_detect_batch, audio, model_file):
+        # Get the full path to the selected model
+        model_path = checkpoints_path / model_file
+        if not model_path.exists():
+            raise ValueError(f"Selected model file {model_file} not found in {checkpoints_path}")
+
         in_img_list = []
         for i in images:
             in_img = i.numpy().squeeze()
@@ -125,7 +137,7 @@ class Wav2Lip:
         if audio is None or "waveform" not in audio or "sample_rate" not in audio:
             raise ValueError("Valid audio input is required.")
 
-        waveform = audio["waveform"].squeeze(0).numpy()  # Expected shape: [channels, samples]
+        waveform = audio["waveform"].squeeze(0).numpy()
         sample_rate = audio["sample_rate"]
 
         # Step 1: Convert to Mono if Necessary
@@ -164,10 +176,10 @@ class Wav2Lip:
             print(f"Saved temporary audio file at {temp_audio_path}")
 
         try:
-            # Process with Wav2Lip model
+            # Process with selected Wav2Lip model
             out_img_list = wav2lip_(in_img_list, temp_audio_path, face_detect_batch, mode, model_path)
         finally:
-            os.unlink(temp_audio_path)  # Ensure temporary file is deleted
+            os.unlink(temp_audio_path)
             print(f"Deleted temporary audio file at {temp_audio_path}")
 
         out_tensor_list = []
@@ -178,9 +190,7 @@ class Wav2Lip:
 
         images = torch.stack(out_tensor_list, dim=0)
 
-        # Return the processed images and the original audio
         return (images, audio,)
-
 
 NODE_CLASS_MAPPINGS = {
     "Wav2Lip": Wav2Lip,

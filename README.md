@@ -47,7 +47,7 @@ To use the Wav2Lip node, you need to download the required models separately. Pl
 ### wav2lip model:
 
 1. Download the wav2lip model: [-model-](https://huggingface.co/Nekochu/Wav2Lip/resolve/main/wav2lip_gan.pth?download=true) 
-2. Place the `.pth model file in the `custom_nodes\ComfyUI_wav2lip\Wav2Lip\checkpoints` folder
+2. Place the `.pth or .onnx model file in the `custom_nodes\ComfyUI_wav2lip\Wav2Lip\checkpoints` folder
 3. Start or restart ComfyUI.
 
 ## Usage

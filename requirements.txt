@@ -6,3 +6,5 @@ opencv-python
 torchvision
 pathlib
 librosa
+onnxruntime-gpu>=1.15.0; platform_system == "Windows" or platform_system == "Linux"
+onnxruntime>=1.15.0; platform_system == "Darwin"  # for macOS
